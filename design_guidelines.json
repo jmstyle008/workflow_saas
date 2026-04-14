@@ -1,0 +1,92 @@
+{
+  "theme": "dark",
+  "archetype": "2 (Performance Pro / Industrial)",
+  "colors": {
+    "background": "#09090b",
+    "surface": "#121214",
+    "surface_hover": "#1f1f22",
+    "primary": "#FF5C00",
+    "primary_hover": "#E05000",
+    "text_primary": "#FFFFFF",
+    "text_secondary": "#A1A1AA",
+    "border": "rgba(255, 255, 255, 0.1)",
+    "success": "#22C55E",
+    "warning": "#F59E0B",
+    "error": "#EF4444",
+    "accent_blue": "#007AFF"
+  },
+  "typography": {
+    "font_families": {
+      "heading": "Barlow Condensed, sans-serif",
+      "body": "IBM Plex Sans, sans-serif",
+      "mono": "IBM Plex Mono, monospace"
+    },
+    "scale": {
+      "h1": "text-4xl sm:text-5xl tracking-tight uppercase font-bold",
+      "h2": "text-2xl sm:text-3xl tracking-tight uppercase font-semibold",
+      "h3": "text-xl uppercase tracking-wider font-semibold",
+      "body": "text-base tracking-normal",
+      "small": "text-sm uppercase tracking-widest",
+      "metrics": "text-5xl font-black tracking-tighter"
+    }
+  },
+  "layout_and_spacing": {
+    "spacing_scale": "tight",
+    "grid_strategy": "Control Room Grid (Dense, Data-heavy)",
+    "container_padding": "p-6",
+    "radius": "rounded-none or max rounded-sm",
+    "borders": "1px solid border-white/10 for structure"
+  },
+  "components": {
+    "buttons": "Sharp edges, flat, highly saturated primary background, bright white text, hover state slightly darker with increased ring. data-testid required.",
+    "cards": "Cardless or Grid Border style. 1px border on right/bottom to form a continuous grid. No soft shadows. Solid background matching surface.",
+    "navigation": "Sticky left sidebar or fixed top nav. Solid surface color (no glassmorphism to avoid data distraction). Primary color for active state.",
+    "status_indicators": "Traffic light colors (Green, Amber, Red). Use soft glow (drop-shadow) and solid dots. No neon borders.",
+    "inputs": "Shadcn based. Sharp borders, clear focus ring with primary color (ring-[#FF5C00])."
+  },
+  "animation": {
+    "hover": "Instant background color change, slight -translate-y-[1px]",
+    "transitions": "transition-colors duration-200 ease-in-out"
+  },
+  "media": {
+    "images": [
+      {
+        "category": "hero_auth_background",
+        "url": "https://images.unsplash.com/photo-1774347155485-195be38eda87?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1Nzh8MHwxfHNlYXJjaHwyfHxzcG9ydHMlMjBjYXIlMjBuaWdodCUyMGdhcmFnZXxlbnwwfHx8fDE3NzYxOTY5MzV8MA&ixlib=rb-4.1.0&q=85",
+        "description": "Dark sports car parked in illuminated garage setting - use for auth screens or hero sections."
+      },
+      {
+        "category": "worker_action",
+        "url": "https://images.unsplash.com/photo-1760827797819-4361cd5cd353?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxOTF8MHwxfHNlYXJjaHwxfHxhdXRvJTIwZGV0YWlsaW5nJTIwd29ya2VyfGVufDB8fHx8MTc3NjE5NjkyMHww&ixlib=rb-4.1.0&q=85",
+        "description": "Man washing car in a dimly lit garage - use for worker portal or service marketing page."
+      },
+      {
+        "category": "evidence_placeholder_1",
+        "url": "https://images.unsplash.com/photo-1652987086659-2662433aed85?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxOTF8MHwxfHNlYXJjaHwyfHxhdXRvJTIwZGV0YWlsaW5nJTIwd29ya2VyfGVufDB8fHx8MTc3NjE5NjkyMHww&ixlib=rb-4.1.0&q=85",
+        "description": "Man waxing a car - use as placeholder for before/after evidence photos."
+      },
+      {
+        "category": "evidence_placeholder_2",
+        "url": "https://images.unsplash.com/photo-1705079040164-f52b45298ccc?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njd8MHwxfHNlYXJjaHwyfHxjYXIlMjBlbmdpbmUlMjBjbG9zZSUyMHVwfGVufDB8fHx8MTc3NjE5NjkzNXww&ixlib=rb-4.1.0&q=85",
+        "description": "Close up rear view mirror - use as detail evidence placeholder."
+      },
+      {
+        "category": "sponsor_logo_1",
+        "url": "https://images.unsplash.com/photo-1764344815160-0e2afc6939a0?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NzR8MHwxfHNlYXJjaHwyfHxjb21wYW55JTIwbG9nbyUyMHdoaXRlJTIwYmFja2dyb3VuZHxlbnwwfHx8fDE3NzYxMzA5OTZ8MA&ixlib=rb-4.1.0&q=85",
+        "description": "Placeholder brand logo."
+      }
+    ]
+  },
+  "icons_library": "@phosphor-icons/react",
+  "instructions_to_main_agent": [
+    "Install @phosphor-icons/react for icons.",
+    "Use strict dark mode. The entire visual language relies on dark mode contrast, do not implement a light mode alternative.",
+    "Build the dashboard using a 'Control Room' grid: dense, gap-4, precise.",
+    "Use Shadcn UI but override corner radii to 0 or 2px max (`rounded-none` or `rounded-sm`) for a sharp industrial look.",
+    "Use pure white for primary text against the dark backgrounds.",
+    "Use the 'Grid Borders' layout pattern for dashboard widgets: border-collapse style with 1px border-white/10 on right and bottom of cells to look technical.",
+    "Evidence thumbnails should use aspect-video and object-cover with a subtle border.",
+    "Mandatory: Add `data-testid` to all buttons, links, inputs, and interactive elements for testing.",
+    "Typography: Import and use 'Barlow Condensed' for headings/metrics and 'IBM Plex Sans' for body text from Google Fonts."
+  ]
+}
