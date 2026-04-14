@@ -161,7 +161,7 @@ const ClientPortal = () => {
           <div className="p-4 border-b border-white/10">
             <div className="flex items-center justify-between mb-3">
               <h2 className="font-['Barlow_Condensed'] text-lg text-white uppercase tracking-wider">
-                My {t('items')}
+                {t('myItems')}
               </h2>
               <Button
                 onClick={() => setShowCreateItem(true)}
@@ -224,13 +224,13 @@ const ClientPortal = () => {
             ) : (
               <div className="p-8 text-center text-zinc-500">
                 <Package size={48} className="mx-auto mb-4 text-zinc-700" />
-                <p className="mb-4">No items registered yet</p>
+                <p className="mb-4">{t('noItemsYet')}</p>
                 <Button
                   onClick={() => setShowCreateItem(true)}
                   className="bg-[#FF5C00] hover:bg-[#E05000] text-white rounded-none"
                 >
                   <Plus size={16} className="mr-2" />
-                  Register Item
+                  {t('registerItem')}
                 </Button>
               </div>
             )}
@@ -277,7 +277,7 @@ const ClientPortal = () => {
               {/* Checkpoints Timeline */}
               <div className="space-y-4">
                 <h2 className="font-['Barlow_Condensed'] text-lg text-white uppercase tracking-wider mb-4">
-                  Progress Timeline
+                  {t('progressTimeline')}
                 </h2>
                 
                 {itemDetails.checkpoints?.map((checkpoint, cpIdx) => {
@@ -317,7 +317,7 @@ const ClientPortal = () => {
                               {language === 'es' && checkpoint.name_es ? checkpoint.name_es : checkpoint.name}
                             </h3>
                             <p className="text-zinc-500 text-sm">
-                              {completedSubtasks}/{totalSubtasks} tasks completed
+                              {completedSubtasks}/{totalSubtasks} {t('tasksCompleted')}
                             </p>
                           </div>
                         </div>
@@ -373,7 +373,7 @@ const ClientPortal = () => {
                 {itemDetails.checkpoints?.length === 0 && (
                   <div className="bg-[#121214] border border-white/10 p-8 text-center">
                     <Clock size={48} className="mx-auto mb-4 text-zinc-700" />
-                    <p className="text-zinc-500">No checkpoints configured yet. Your service team will set these up.</p>
+                    <p className="text-zinc-500">{t('noCheckpointsConfiguredClient')}</p>
                   </div>
                 )}
               </div>
@@ -383,7 +383,7 @@ const ClientPortal = () => {
               <div className="text-center">
                 <Eye size={64} className="mx-auto mb-4 text-zinc-700" />
                 <p className="font-['Barlow_Condensed'] text-lg uppercase tracking-wider">
-                  Select an item to track its progress
+                  {t('selectItemToTrack')}
                 </p>
               </div>
             </div>
@@ -396,7 +396,7 @@ const ClientPortal = () => {
         <DialogContent className="bg-[#121214] border-white/10 text-white max-w-md">
           <DialogHeader>
             <DialogTitle className="font-['Barlow_Condensed'] text-xl uppercase tracking-wider">
-              Register Item
+              {t('registerItem')}
             </DialogTitle>
             <DialogDescription className="text-zinc-500">Add a new item for service tracking</DialogDescription>
           </DialogHeader>
@@ -451,7 +451,7 @@ const ClientPortal = () => {
               className="bg-[#FF5C00] hover:bg-[#E05000] text-white rounded-none"
               data-testid="submit-create-item"
             >
-              Register
+              {t('registerItem')}
             </Button>
           </DialogFooter>
         </DialogContent>

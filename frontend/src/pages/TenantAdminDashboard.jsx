@@ -238,10 +238,10 @@ const TenantAdminDashboard = () => {
       <div className="min-h-screen bg-[#09090b] flex items-center justify-center">
         <div className="text-center">
           <h2 className="font-['Barlow_Condensed'] text-2xl text-white uppercase tracking-wider mb-4">
-            No Tenant Assigned
+            {t('noTenantAssigned')}
           </h2>
           <p className="text-zinc-400 mb-6">
-            Please contact your administrator to be assigned to a tenant.
+            {t('contactAdmin')}
           </p>
           <Button onClick={handleLogout} variant="outline" className="border-white/10 text-white">
             <SignOut size={18} className="mr-2" />
@@ -341,10 +341,10 @@ const TenantAdminDashboard = () => {
                 <div className="animate-fade-in">
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-0 mb-8">
                     {[
-                      { label: 'Total Users', value: stats?.total_users || 0, color: 'text-[#FF5C00]' },
-                      { label: 'Checkpoints', value: stats?.total_checkpoints || 0, color: 'text-blue-500' },
-                      { label: 'Items In Progress', value: stats?.items_in_progress || 0, color: 'text-amber-500' },
-                      { label: 'Items Completed', value: stats?.items_completed || 0, color: 'text-green-500' },
+                      { label: t('totalUsers'), value: stats?.total_users || 0, color: 'text-[#FF5C00]' },
+                      { label: t('checkpoints'), value: stats?.total_checkpoints || 0, color: 'text-blue-500' },
+                      { label: t('itemsInProgress'), value: stats?.items_in_progress || 0, color: 'text-amber-500' },
+                      { label: t('itemsCompleted'), value: stats?.items_completed || 0, color: 'text-green-500' },
                     ].map((stat, idx) => (
                       <div key={idx} className="p-6 bg-[#121214] grid-border-right grid-border-bottom">
                         <p className="text-zinc-500 text-xs uppercase tracking-widest mb-2">{stat.label}</p>
@@ -366,7 +366,7 @@ const TenantAdminDashboard = () => {
                       <h3 className="font-['Barlow_Condensed'] text-lg text-white uppercase tracking-wider mb-1">
                         Create Checkpoint
                       </h3>
-                      <p className="text-zinc-500 text-sm">Add a new workflow stage</p>
+                      <p className="text-zinc-500 text-sm">{t('addNewWorkflowStage')}</p>
                     </button>
                     <button
                       onClick={() => { setActiveTab('users'); setShowCreateUser(true); }}
@@ -375,9 +375,9 @@ const TenantAdminDashboard = () => {
                     >
                       <Users size={24} className="text-[#FF5C00] mb-4" />
                       <h3 className="font-['Barlow_Condensed'] text-lg text-white uppercase tracking-wider mb-1">
-                        Add Team Member
+                        {t('addTeamMember')}
                       </h3>
-                      <p className="text-zinc-500 text-sm">Invite workers to your team</p>
+                      <p className="text-zinc-500 text-sm">{t('inviteWorkers')}</p>
                     </button>
                     <button
                       onClick={() => navigate('/worker')}
@@ -386,9 +386,9 @@ const TenantAdminDashboard = () => {
                     >
                       <Package size={24} className="text-[#FF5C00] mb-4" />
                       <h3 className="font-['Barlow_Condensed'] text-lg text-white uppercase tracking-wider mb-1">
-                        Worker Portal
+                        {t('workerPortal')}
                       </h3>
-                      <p className="text-zinc-500 text-sm">View and manage tasks</p>
+                      <p className="text-zinc-500 text-sm">{t('viewManageTasks')}</p>
                     </button>
                   </div>
                 </div>
@@ -398,7 +398,7 @@ const TenantAdminDashboard = () => {
               {activeTab === 'checkpoints' && (
                 <div className="animate-fade-in">
                   <div className="flex items-center justify-between mb-6">
-                    <p className="text-zinc-400">{checkpoints.length} checkpoint(s)</p>
+                    <p className="text-zinc-400">{checkpoints.length} {t('checkpointsCount')}</p>
                     <Button
                       onClick={() => setShowCreateCheckpoint(true)}
                       className="bg-[#FF5C00] hover:bg-[#E05000] text-white rounded-none"
@@ -496,7 +496,7 @@ const TenantAdminDashboard = () => {
                                 </div>
                               ) : (
                                 <div className="px-6 py-8 text-center text-zinc-500 text-sm">
-                                  No subtasks yet. Add subtasks to define the work required.
+                                  {t('noSubtasksYet')}
                                 </div>
                               )}
                             </div>
@@ -509,10 +509,10 @@ const TenantAdminDashboard = () => {
                       <div className="bg-[#121214] border border-white/10 px-6 py-12 text-center">
                         <CheckSquare size={48} className="text-zinc-700 mx-auto mb-4" />
                         <h3 className="font-['Barlow_Condensed'] text-lg text-white uppercase tracking-wider mb-2">
-                          No Checkpoints Yet
+                          {t('noCheckpointsYet')}
                         </h3>
                         <p className="text-zinc-500 text-sm mb-4">
-                          Create your first checkpoint to start defining your workflow.
+                          {t('createFirstCheckpoint')}
                         </p>
                         <Button
                           onClick={() => setShowCreateCheckpoint(true)}
@@ -532,7 +532,7 @@ const TenantAdminDashboard = () => {
               {activeTab === 'items' && (
                 <div className="animate-fade-in">
                   <div className="flex items-center justify-between mb-6">
-                    <p className="text-zinc-400">{tenantItems.length} item(s)</p>
+                    <p className="text-zinc-400">{tenantItems.length} {t('itemsCount')}</p>
                     <div className="flex items-center gap-2">
                       <Button
                         onClick={() => setShowAssignItem(true)}
@@ -598,7 +598,7 @@ const TenantAdminDashboard = () => {
               {activeTab === 'users' && (
                 <div className="animate-fade-in">
                   <div className="flex items-center justify-between mb-6">
-                    <p className="text-zinc-400">{users.length} user(s)</p>
+                    <p className="text-zinc-400">{users.length} {t('usersFound')}</p>
                     <Button
                       onClick={() => setShowCreateUser(true)}
                       className="bg-[#FF5C00] hover:bg-[#E05000] text-white rounded-none"
@@ -645,7 +645,7 @@ const TenantAdminDashboard = () => {
                     </table>
                     {users.length === 0 && (
                       <div className="px-6 py-12 text-center text-zinc-500">
-                        No team members yet
+                        {t('noTeamMembers')}
                       </div>
                     )}
                   </div>
@@ -705,7 +705,7 @@ const TenantAdminDashboard = () => {
             <DialogTitle className="font-['Barlow_Condensed'] text-xl uppercase tracking-wider">
               Create Checkpoint
             </DialogTitle>
-            <DialogDescription className="text-zinc-500">Add a new workflow stage</DialogDescription>
+            <DialogDescription className="text-zinc-500">{t('addNewWorkflowStage')}</DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="grid grid-cols-2 gap-4">

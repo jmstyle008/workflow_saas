@@ -172,10 +172,10 @@ const WorkerPortal = () => {
       <div className="min-h-screen bg-[#09090b] flex items-center justify-center">
         <div className="text-center">
           <h2 className="font-['Barlow_Condensed'] text-2xl text-white uppercase tracking-wider mb-4">
-            No Tenant Assigned
+            {t('noTenantAssigned')}
           </h2>
           <p className="text-zinc-400 mb-6">
-            Please contact your administrator to be assigned to a tenant.
+            {t('contactAdmin')}
           </p>
           <Button onClick={handleLogout} variant="outline" className="border-white/10 text-white">
             <SignOut size={18} className="mr-2" />
@@ -197,7 +197,7 @@ const WorkerPortal = () => {
                 <CheckCircle size={20} weight="fill" className="text-white" />
               </div>
               <span className="font-['Barlow_Condensed'] text-lg font-bold text-white uppercase tracking-wider">
-                Worker Portal
+                {t('workerPortal')}
               </span>
             </div>
           </div>
@@ -340,7 +340,7 @@ const WorkerPortal = () => {
                         </div>
                         {isCurrentCheckpoint && (
                           <span className="px-3 py-1 bg-[#FF5C00]/10 text-[#FF5C00] text-xs uppercase tracking-wider">
-                            Current
+                            {t('current')}
                           </span>
                         )}
                       </div>
@@ -401,7 +401,7 @@ const WorkerPortal = () => {
                                     className="bg-amber-500/10 text-amber-500 hover:bg-amber-500/20 rounded-none text-xs"
                                     data-testid={`start-${subtask.subtask_id}`}
                                   >
-                                    Start
+                                    {t('start')}
                                   </Button>
                                 )}
                                 
@@ -412,7 +412,7 @@ const WorkerPortal = () => {
                                     className="bg-green-500/10 text-green-500 hover:bg-green-500/20 rounded-none text-xs"
                                     data-testid={`complete-${subtask.subtask_id}`}
                                   >
-                                    Complete
+                                    {t('complete')}
                                   </Button>
                                 )}
                                 
@@ -454,7 +454,7 @@ const WorkerPortal = () => {
                 {itemDetails.checkpoints?.length === 0 && (
                   <div className="bg-[#121214] border border-white/10 p-8 text-center">
                     <CheckSquare size={48} className="mx-auto mb-4 text-zinc-700" />
-                    <p className="text-zinc-500">No checkpoints configured for this tenant</p>
+                    <p className="text-zinc-500">{t('noCheckpointsConfigured')}</p>
                   </div>
                 )}
               </div>
@@ -464,7 +464,7 @@ const WorkerPortal = () => {
               <div className="text-center">
                 <Package size={64} className="mx-auto mb-4 text-zinc-700" />
                 <p className="font-['Barlow_Condensed'] text-lg uppercase tracking-wider">
-                  Select an item to view details
+                  {t('selectItemToView')}
                 </p>
               </div>
             </div>
@@ -477,7 +477,7 @@ const WorkerPortal = () => {
         <DialogContent className="bg-[#121214] border-white/10 text-white max-w-md">
           <DialogHeader>
             <DialogTitle className="font-['Barlow_Condensed'] text-xl uppercase tracking-wider">
-              Upload Evidence
+              {t('uploadEvidence')}
             </DialogTitle>
             <DialogDescription className="text-zinc-500">Attach photos, documents, or notes</DialogDescription>
           </DialogHeader>
@@ -490,21 +490,21 @@ const WorkerPortal = () => {
             )}
             
             <div className="space-y-2">
-              <Label className="text-zinc-400 uppercase text-xs tracking-wider">Tag</Label>
+              <Label className="text-zinc-400 uppercase text-xs tracking-wider">{t('tag')}</Label>
               <Select value={uploadTag} onValueChange={setUploadTag}>
                 <SelectTrigger className="bg-[#09090b] border-white/10 text-white rounded-none" data-testid="upload-tag-select">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="bg-[#121214] border-white/10">
-                  <SelectItem value="before">Before</SelectItem>
-                  <SelectItem value="during">During</SelectItem>
-                  <SelectItem value="after">After</SelectItem>
+                  <SelectItem value="before">{t('before')}</SelectItem>
+                  <SelectItem value="during">{t('during')}</SelectItem>
+                  <SelectItem value="after">{t('after')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             
             <div className="space-y-2">
-              <Label className="text-zinc-400 uppercase text-xs tracking-wider">Photo/Document</Label>
+              <Label className="text-zinc-400 uppercase text-xs tracking-wider">{t('photoDocument')}</Label>
               <div 
                 className="border-2 border-dashed border-white/10 p-6 text-center cursor-pointer hover:border-[#FF5C00]/50 transition-colors"
                 onClick={() => fileInputRef.current?.click()}
@@ -520,7 +520,7 @@ const WorkerPortal = () => {
                 ) : (
                   <>
                     <Upload size={32} className="mx-auto mb-2 text-zinc-500" />
-                    <p className="text-zinc-400 text-sm">Click to upload or drag and drop</p>
+                    <p className="text-zinc-400 text-sm">{t('clickToUpload')}</p>
                   </>
                 )}
               </div>
@@ -535,7 +535,7 @@ const WorkerPortal = () => {
             </div>
             
             <div className="space-y-2">
-              <Label className="text-zinc-400 uppercase text-xs tracking-wider">Note (Optional)</Label>
+              <Label className="text-zinc-400 uppercase text-xs tracking-wider">{t('noteOptional')}</Label>
               <Textarea
                 value={uploadNote}
                 onChange={(e) => setUploadNote(e.target.value)}
@@ -556,7 +556,7 @@ const WorkerPortal = () => {
               className="bg-[#FF5C00] hover:bg-[#E05000] text-white rounded-none"
               data-testid="submit-upload"
             >
-              {uploading ? 'Uploading...' : 'Upload'}
+              {uploading ? t('uploading') : t('upload')}
             </Button>
           </DialogFooter>
         </DialogContent>
