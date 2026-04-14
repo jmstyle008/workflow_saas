@@ -14,6 +14,8 @@ import TenantAdminDashboard from './pages/TenantAdminDashboard';
 import WorkerPortal from './pages/WorkerPortal';
 import ClientPortal from './pages/ClientPortal';
 
+import DemoShowcase from './pages/DemoShowcase';
+
 // Config
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = axios.create({
@@ -281,6 +283,7 @@ function AppRouter() {
   return (
     <Routes>
       <Route path="/" element={<LandingPage />} />
+      <Route path="/demo" element={<DemoShowcase />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/auth/callback" element={<AuthCallback />} />
