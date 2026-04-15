@@ -880,6 +880,7 @@ const TenantAdminDashboard = () => {
                   <SelectItem value="supervisor">Supervisor</SelectItem>
                   <SelectItem value="technician">Technician</SelectItem>
                   <SelectItem value="inspector">Inspector</SelectItem>
+                  <SelectItem value="receptionist">{language === 'es' ? 'Recepcionista' : 'Receptionist'}</SelectItem>
                   <SelectItem value="viewer">Viewer</SelectItem>
                 </SelectContent>
               </Select>

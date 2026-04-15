@@ -438,6 +438,7 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
       technician: '/worker',
       supervisor: '/worker',
       inspector: '/worker',
+      receptionist: '/tenant',
       client: '/client',
       viewer: '/client'
     };

@@ -193,6 +193,37 @@ class AuditLog(BaseModel):
     changes: Dict[str, Any] = {}
     timestamp: datetime
 
+class QuoteRequest(BaseModel):
+    name: str
+    email: EmailStr
+    phone: Optional[str] = None
+    item_name: str
+    item_type: str = "vehicle"
+    description: str
+    tenant_id: Optional[str] = None
+
+class ClientSignup(BaseModel):
+    name: str
+    email: EmailStr
+    phone: Optional[str] = None
+    vehicle_make: Optional[str] = None
+    vehicle_model: Optional[str] = None
+    vehicle_year: Optional[str] = None
+    vehicle_color: Optional[str] = None
+    notes: Optional[str] = None
+
+class TenantSelfSignup(BaseModel):
+    company_name: str
+    industry: str = "general"
+    admin_name: str
+    admin_email: EmailStr
+    admin_password: str
+    language: str = "es"
+
+class TechnicianAssignment(BaseModel):
+    user_id: str
+    checkpoint_ids: List[str]
+
 # ======================= HELPERS =======================
 
 def hash_password(password: str) -> str:
@@ -1392,6 +1423,165 @@ async def seed_full_demo(request: Request):
         pass
     
     return {"message": "Full demo seeded", "tenant_id": tenant_id, "users_created": len(demo_users), "vehicles": len(vehicles)}
+
+# ======================= RECEPTIONIST ENDPOINTS =======================
+
+async def require_receptionist_or_admin(request: Request) -> dict:
+    user = await get_current_user(request)
+    if user.get("role") not in ["super_admin", "tenant_admin", "receptionist", "supervisor"]:
+        raise HTTPException(status_code=403, detail="Receptionist or Admin access required")
+    return user
+
+@api_router.post("/receptionist/register-client")
+async def receptionist_register_client(data: ClientSignup, request: Request):
+    """Receptionist registers a client and optionally their vehicle"""
+    admin = await require_receptionist_or_admin(request)
+    tenant_id = admin.get("tenant_id")
+    if not tenant_id:
+        raise HTTPException(status_code=400, detail="Not assigned to a tenant")
+    
+    email = data.email.lower()
+    existing = await db.users.find_one({"email": email})
+    
+    temp_password = secrets.token_urlsafe(8)
+    
+    if not existing:
+        user_id = f"user_{uuid.uuid4().hex[:12]}"
+        await db.users.insert_one({
+            "user_id": user_id, "email": email, "name": data.name,
+            "password_hash": hash_password(temp_password),
+            "role": "client", "tenant_id": tenant_id, "language": "es",
+            "phone": data.phone,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        })
+    else:
+        user_id = existing.get("user_id")
+        if not existing.get("tenant_id"):
+            await db.users.update_one({"user_id": user_id}, {"$set": {"tenant_id": tenant_id}})
+    
+    # Create vehicle if provided
+    item_id = None
+    if data.vehicle_make:
+        item_id = f"item_{uuid.uuid4().hex[:12]}"
+        first_cp = await db.checkpoints.find_one({"tenant_id": tenant_id, "is_active": True}, sort=[("order", 1)])
+        await db.items.insert_one({
+            "item_id": item_id, "tenant_id": tenant_id, "client_id": user_id,
+            "name": f"{data.vehicle_year or ''} {data.vehicle_make} {data.vehicle_model or ''}".strip(),
+            "description": data.notes, "item_type": "vehicle",
+            "current_checkpoint_id": first_cp["checkpoint_id"] if first_cp else None,
+            "status": "registered",
+            "metadata": {"make": data.vehicle_make, "model": data.vehicle_model, "year": data.vehicle_year, "color": data.vehicle_color},
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        })
+    
+    await log_audit(tenant_id, admin["user_id"], "register_client", "user", user_id, {"client_email": email})
+    
+    # In production, send email with temp_password. For now, log it.
+    logger.info(f"Client registered: {email} / temp password: {temp_password}")
+    
+    return {"user_id": user_id, "email": email, "temp_password": temp_password, "item_id": item_id, "message": "Client registered. Credentials generated."}
+
+# ======================= SUPERVISOR ENDPOINTS =======================
+
+@api_router.post("/supervisor/assign-technician")
+async def assign_technician_to_checkpoints(data: TechnicianAssignment, request: Request):
+    """Supervisor assigns a technician to specific checkpoints"""
+    user = await get_current_user(request)
+    if user.get("role") not in ["super_admin", "tenant_admin", "supervisor"]:
+        raise HTTPException(status_code=403, detail="Supervisor access required")
+    
+    tenant_id = user.get("tenant_id")
+    tech = await db.users.find_one({"user_id": data.user_id, "tenant_id": tenant_id})
+    if not tech:
+        raise HTTPException(status_code=404, detail="Technician not found")
+    
+    # Store assignments
+    await db.technician_assignments.update_one(
+        {"user_id": data.user_id, "tenant_id": tenant_id},
+        {"$set": {"checkpoint_ids": data.checkpoint_ids, "updated_at": datetime.now(timezone.utc).isoformat()}},
+        upsert=True
+    )
+    
+    await log_audit(tenant_id, user["user_id"], "assign_technician", "user", data.user_id, {"checkpoints": data.checkpoint_ids})
+    return {"message": "Technician assigned", "user_id": data.user_id, "checkpoint_ids": data.checkpoint_ids}
+
+@api_router.get("/supervisor/assignments")
+async def get_technician_assignments(request: Request):
+    user = await get_current_user(request)
+    if user.get("role") not in ["super_admin", "tenant_admin", "supervisor"]:
+        raise HTTPException(status_code=403, detail="Supervisor access required")
+    
+    tenant_id = user.get("tenant_id")
+    assignments = await db.technician_assignments.find({"tenant_id": tenant_id}, {"_id": 0}).to_list(1000)
+    return assignments
+
+# ======================= QUOTE REQUEST (PUBLIC) =======================
+
+@api_router.post("/public/quote-request")
+async def submit_quote_request(data: QuoteRequest):
+    """Public endpoint for clients to request a quote"""
+    quote_id = f"quote_{uuid.uuid4().hex[:12]}"
+    quote_doc = {
+        "quote_id": quote_id,
+        "name": data.name, "email": data.email.lower(), "phone": data.phone,
+        "item_name": data.item_name, "item_type": data.item_type,
+        "description": data.description, "tenant_id": data.tenant_id,
+        "status": "pending",
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.quote_requests.insert_one(quote_doc)
+    return {"quote_id": quote_id, "message": "Quote request submitted"}
+
+@api_router.get("/tenant/quotes")
+async def list_quote_requests(request: Request):
+    admin = await require_tenant_admin(request)
+    tenant_id = admin.get("tenant_id")
+    quotes = await db.quote_requests.find({"tenant_id": tenant_id}, {"_id": 0}).sort("created_at", -1).to_list(1000)
+    return quotes
+
+# ======================= TENANT SELF-SIGNUP (PUBLIC) =======================
+
+@api_router.post("/public/tenant-signup")
+async def tenant_self_signup(data: TenantSelfSignup):
+    """Public endpoint for a business to sign up for their own tenant"""
+    email = data.admin_email.lower()
+    existing = await db.users.find_one({"email": email})
+    if existing:
+        raise HTTPException(status_code=400, detail="Email already registered")
+    
+    # Create tenant
+    tenant_id = f"tenant_{uuid.uuid4().hex[:12]}"
+    await db.tenants.insert_one({
+        "tenant_id": tenant_id, "name": data.company_name,
+        "industry": data.industry, "description": None, "is_active": True,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "settings": {"default_language": data.language, "supported_languages": ["en", "es"]}
+    })
+    
+    # Create default roles
+    for role_data in [
+        {"name": "tenant_admin", "name_es": "Administrador", "permissions": ["all"], "is_system": True},
+        {"name": "supervisor", "name_es": "Supervisor", "permissions": ["view_all", "assign_tasks", "approve"], "is_system": True},
+        {"name": "technician", "name_es": "Técnico", "permissions": ["view_assigned", "update_progress", "upload_evidence"], "is_system": True},
+        {"name": "inspector", "name_es": "Inspector", "permissions": ["view_all", "approve", "reject"], "is_system": True},
+        {"name": "receptionist", "name_es": "Recepcionista", "permissions": ["register_clients", "view_items"], "is_system": True},
+    ]:
+        await db.roles.insert_one({
+            "role_id": f"role_{uuid.uuid4().hex[:12]}", "tenant_id": tenant_id,
+            **role_data, "allowed_checkpoints": [], "created_at": datetime.now(timezone.utc).isoformat()
+        })
+    
+    # Create admin user
+    user_id = f"user_{uuid.uuid4().hex[:12]}"
+    await db.users.insert_one({
+        "user_id": user_id, "email": email, "name": data.admin_name,
+        "password_hash": hash_password(data.admin_password),
+        "role": "tenant_admin", "tenant_id": tenant_id, "language": data.language,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    })
+    
+    return {"tenant_id": tenant_id, "user_id": user_id, "message": "Tenant created successfully. Please login."}
 
 # ======================= PUBLIC ENDPOINTS =======================
 
